@@ -1,0 +1,10 @@
+flask
+torch
+torchvision
+torchaudio
+pytorch_lightning
+scikit-video
+h5py
+requests
+gdwon
+opencv-python

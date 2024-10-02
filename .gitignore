@@ -1,0 +1,15 @@
+# Ambientes virtuais
+.venv/
+env/
+venv/
+
+# Caches do Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Arquivos do VS Code
+.vscode/
+
+# Arquivos temporários do Code Runner
+tempCodeRunnerFile.py

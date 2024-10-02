@@ -1,10 +1,7 @@
-flask
-torch
-torchvision
-torchaudio
-pytorch_lightning
-scikit-video
-h5py
-requests
-gdwon
-opencv-python
+Flask==2.2.3
+Pillow==9.2.0
+numpy==1.24.0
+opencv-python==4.6.0.66
+requests==2.28.1
+openai==0.27.0
+

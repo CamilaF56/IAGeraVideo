@@ -37,7 +37,7 @@ def generate():
             response = openai.Image.create(
                 prompt=p,
                 n=1,  # Uma imagem por prompt
-                size="600x800",  # Tamanho da imagem
+                size="1024x1024",  # Tamanho da imagem
             )
             image_urls.append(response["data"][0]["url"])
             logging.debug(

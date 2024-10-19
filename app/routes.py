@@ -1,12 +1,12 @@
 from io import BytesIO
 from PIL import Image
-from flask import Blueprint, render_template, request, url_for
+from flask import Blueprint, render_template, request, url_for, send_from_directory
 import openai
-import cv2
 import numpy as np
 import os
 import logging
 import requests
+from moviepy.editor import ImageSequenceClip
 
 bp = Blueprint("main", __name__)
 
@@ -14,21 +14,47 @@ bp = Blueprint("main", __name__)
 logging.basicConfig(level=logging.DEBUG)
 
 # Substitua 'your-api-key' pela sua chave da OpenAI
-openai.api_key = "CHAVE-GPT"
+openai.api_key = "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"
 
+filename = "animated_video_encoded.mp4"
 
 @bp.route("/")
 def index():
+    """
+    Renderiza a página inicial do aplicativo.
+
+    Returns:
+        str: O template da página inicial.
+    """
     return render_template("index.html")
 
+@bp.route('/video/<filename>')
+def serve_video(filename):
+    """
+    Serve um vídeo a partir do diretório estático.
+
+    Args:
+        filename (str): Nome do arquivo de vídeo.
+
+    Returns:
+        Response: O vídeo solicitado.
+    """
+    return send_from_directory(os.path.join('app', 'static'), filename)
 
 @bp.route("/generate", methods=["POST"])
 def generate():
+    """
+    Gera um vídeo a partir de um prompt fornecido pelo usuário.
+
+    Método: POST
+
+    Returns:
+        str: O template do vídeo gerado ou uma mensagem de erro em caso de falha.
+    """
     prompt = request.form["prompt"]
     steps = 15  # Número de frames para o movimento
     logging.debug(f"Prompt recebido: {prompt}")
 
-    # Gerar prompts variáveis para simular movimento
     moving_prompts = generate_moving_prompts(prompt, steps)
 
     image_urls = []
@@ -40,14 +66,13 @@ def generate():
                 size="1024x1024",  # Tamanho da imagem
             )
             image_urls.append(response["data"][0]["url"])
-            logging.debug(
-                f"Imagem gerada para o prompt '{p}': {response['data'][0]['url']}"
-            )
+            logging.debug(f"Imagem gerada para o prompt '{p}': {response['data'][0]['url']}")
 
         frames = create_frames_from_images(image_urls)
         if frames:
-            video_path = os.path.join("app", "static", "animated_video.mp4")
+            video_path = os.path.join("app", "static", "animated_video_encoded.mp4")
             save_video(frames, video_path)
+            return render_template("video.html", video_path=url_for("static", filename="animated_video_encoded.mp4"))
         else:
             logging.error("Nenhum frame gerado para salvar o vídeo.")
             return "Erro ao gerar vídeo", 500
@@ -56,24 +81,24 @@ def generate():
         logging.error(f"Erro ao gerar imagens com DALL-E: {e}")
         return "Erro ao gerar vídeo", 500
 
-    logging.info(f"Vídeo salvo em: {video_path}")
-    return render_template(
-        "video.html", video_path=url_for("static", filename="animated_video.mp4")
-    )
-
 
 def create_frames_from_images(image_urls):
+    """
+    Cria frames a partir de URLs de imagens.
+
+    Args:
+        image_urls (list): Lista de URLs de imagens.
+
+    Returns:
+        list: Lista de frames em formato NumPy.
+    """
     frames = []
 
     for img_url in image_urls:
-        # Baixar a imagem
         response = requests.get(img_url)
         if response.status_code == 200:
-            image = Image.open(BytesIO(response.content))
-            # Redimensionar a imagem para o tamanho desejado
-            image = image.resize((640, 480))
-            frame = np.array(image)  # Converter para array NumPy
-            frames.append(frame)
+            image = Image.open(BytesIO(response.content)).resize((640, 480))
+            frames.append(np.array(image))  # Converter para array NumPy
         else:
             logging.error(f"Erro ao baixar a imagem: {img_url}")
 
@@ -81,46 +106,39 @@ def create_frames_from_images(image_urls):
 
 
 def generate_moving_prompts(base_prompt, steps):
-    prompts = []
-    for i in range(steps):
-        # Adicione variações pequenas de movimento no prompt
-        prompt = f"{base_prompt}, slight movement, frame {i + 1}, gradual shift, subtle change"
-        prompts.append(prompt)
-    return prompts
+    """
+    Gera prompts com variações de movimento.
+
+    Args:
+        base_prompt (str): O prompt base para geração de imagens.
+        steps (int): Número de variações a serem geradas.
+
+    Returns:
+        list: Lista de prompts variáveis.
+    """
+    return [
+        f"{base_prompt}, slight movement, frame {i + 1}, gradual shift, subtle change"
+        for i in range(steps)
+    ]
 
 
 def save_video(video_content, video_path):
+    """
+    Salva um vídeo a partir de uma sequência de frames.
+
+    Args:
+        video_content (list): Lista de frames.
+        video_path (str): Caminho para salvar o vídeo.
+
+    Returns:
+        None
+    """
     logging.debug("Iniciando o processo de salvamento do vídeo.")
 
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    fps = 20.0
+    # Usando MoviePy para salvar o vídeo
+    clip = ImageSequenceClip(video_content, fps=15)
+    clip.write_videofile(video_path, codec="libx264", audio_codec="aac")
 
-    if isinstance(video_content[0], np.ndarray):
-        frame_height, frame_width = video_content[0].shape[:2]
-    else:
-        logging.error("O primeiro quadro não é um numpy array.")
-        return
-
-    logging.debug(f"Salvando vídeo em: {video_path}")
-
-    # Criação do diretório, se não existir
-    try:
-        os.makedirs(os.path.dirname(video_path), exist_ok=True)
-        logging.debug(f"Diretório criado/verificado: {os.path.dirname(video_path)}")
-    except Exception as e:
-        logging.error(f"Erro ao criar/verificar o diretório: {e}")
-        return
-
-    out = cv2.VideoWriter(video_path, fourcc, fps, (frame_width, frame_height))
-
-    for i, frame in enumerate(video_content):
-        if isinstance(frame, np.ndarray):
-            out.write(frame)
-            logging.debug(f"Frame {i} adicionado ao vídeo.")
-        else:
-            logging.error(f"Frame {i} não é um numpy array: {type(frame)}")
-
-    out.release()
     logging.info(f"Vídeo salvo em: {video_path}")
 
     if os.path.exists(video_path):

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Generated Video</title>
+    <title>Vídeo gerado</title>
     <style>
       * {
         margin: 0;
@@ -62,8 +62,8 @@
     <div class="container">
       <h1>Vídeo gerado</h1>
       <video controls>
-        <source src="{{ video_path }}" type="video/mp4" />
-        Your browser does not support the video tag.
+        <source src="{{ url_for('static', filename='animated_video_encoded.mp4') }}" type="video/mp4"> />
+        Seu navegador não suporta a tag de vídeo.
       </video>
       <br />
       <a href="/">Gerar outro vídeo</a>

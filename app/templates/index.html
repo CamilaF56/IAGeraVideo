@@ -143,6 +143,34 @@
     button:hover {
       background-color: #5300d6;
     }
+
+    /* Spinner */
+    .spinner {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #6200ea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
   </style>
 </head>
 
@@ -161,11 +189,13 @@
   <!-- Conteúdo Principal -->
   <div class="container">
     <h1>IAGeraVideo</h1>
-    <form id="generateForm" action="/generate" method="post">
+    <form id="generateForm" action="/generate" method="post" class="loading">
       <label for="prompt">Escreva sua criatividade:</label>
       <input type="text" id="prompt" name="prompt" required />
       <span class="error" id="error-message">Por favor, insira uma mensagem!</span>
       <button type="submit">Gerar Vídeo</button>
+      <!-- Spinner -->
+      <div class="spinner" id="spinner"></div>
     </form>
   </div>
 
@@ -175,6 +205,8 @@
       const container = document.querySelector('.container');
       const menu = document.querySelector('.menu');
       const btnSlideUp = document.querySelector('.btn-slide-up');
+      const spinner = document.getElementById('spinner');
+      const form = document.getElementById('generateForm');
 
       function hideSplashScreen() {
         splashScreen.style.transform = 'translateY(-100%)';
@@ -184,20 +216,19 @@
       }
       splashScreen.addEventListener('click', hideSplashScreen);
       btnSlideUp.addEventListener('click', hideSplashScreen);
-    });
 
-    // Validação do formulário
-    const form = document.getElementById('generateForm');
-    const promptInput = document.getElementById('prompt');
-    const errorMessage = document.getElementById('error-message');
-
-    form.addEventListener('submit', function (e) {
-      if (promptInput.value.trim() === '') {
-        e.preventDefault();
-        errorMessage.style.display = 'block';
-      } else {
-        errorMessage.style.display = 'none';
-      }
+      // Mostrar o spinner ao enviar o formulário
+      form.addEventListener('submit', function (e) {
+        const promptInput = document.getElementById('prompt');
+        const errorMessage = document.getElementById('error-message');
+        if (promptInput.value.trim() === '') {
+          e.preventDefault();
+          errorMessage.style.display = 'block';
+        } else {
+          errorMessage.style.display = 'none';
+          spinner.style.display = 'block';  // Exibir o spinner
+        }
+      });
     });
   </script>
 </body>

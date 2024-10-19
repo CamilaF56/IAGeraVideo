@@ -14,7 +14,7 @@ bp = Blueprint("main", __name__)
 logging.basicConfig(level=logging.DEBUG)
 
 # Substitua 'your-api-key' pela sua chave da OpenAI
-openai.api_key = "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"
+openai.api_key = "Sua chave"
 
 filename = "animated_video_encoded.mp4"
 

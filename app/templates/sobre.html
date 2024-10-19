@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sobre - IAGeraVideo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding-top: 60px;
+        }
+
+        .menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #6200ea;
+            padding: 0px 10px;
+            display: flex;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            margin: 0 0px;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .menu a:hover {
+            color: rgb(0, 0, 0);
+        }
+
+
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            max-width: 800px;
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 60px;
+        }
+
+        .text {
+            flex: 1;
+            padding-right: 20px;
+        }
+
+        .text h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .text p {
+            color: #555;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .image {
+            flex-shrink: 0;
+            width: 250px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #6200ea;
+            font-size: 16px;
+            border: 1px solid #6200ea;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        a:hover {
+            background-color: #6200ea;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Menu -->
+    <div class="menu">
+        <a href="{{ url_for('main.index') }}">Início</a>
+        <a href="{{ url_for('main.sobre') }}">Sobre</a>
+    </div>
+    <div class="container">
+        <div class="text">
+            <h1>Sobre o IAGeraVideo</h1>
+            <p>
+                O IAGeraVideo é uma plataforma criada como parte de um projeto da faculdade, desafiado pelo nosso
+                querido professor Alcides X. Benicasa. A ideia principal foi criar uma ferramenta que usasse
+                inteligência artificial para gerar vídeos automaticamente a partir de textos que os usuários escrevem.
+                Para isso, utilizamos a API DALL-E da OpenAI, uma tecnologia muito avançada que consegue criar imagens a
+                partir de descrições em palavras. Essa ferramenta ajuda a transformar ideias criativas em vídeos,
+                gerando imagens incríveis com base nas sugestões dos usuários.
+                O objetivo do IAGeraVideo é permitir que qualquer pessoa possa criar vídeos personalizados de forma
+                simples e rápida, apenas escrevendo o que imagina. É uma maneira de mostrar o poder da inteligência
+                artificial e incentivar a criatividade de todos.
+            </p>
+        </div>
+        <div class="image">
+            <img src="{{ url_for('static', filename='img/Alci.jpg') }}" alt="Alcides" style="width: 100%; border-radius: 8px;" />
+        </div>
+    </div>
+</body>
+
+</html>

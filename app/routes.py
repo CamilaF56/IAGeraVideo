@@ -28,6 +28,20 @@ def index():
     """
     return render_template("index.html")
 
+@bp.route("/sobre")
+def sobre():
+    """
+    Rota para a página 'Sobre'.
+
+    Esta função é responsável por renderizar a página 'sobre.html',
+    que contém informações sobre o projeto ou a organização. A rota
+    está mapeada para o caminho '/sobre'.
+
+    Returns:
+        str: O conteúdo HTML da página 'sobre.html' renderizada.
+    """
+    return render_template("sobre.html")
+
 @bp.route('/video/<filename>')
 def serve_video(filename):
     """
